@@ -5,107 +5,166 @@ public class ConvexHull {
 	public static void main(String[] args) {
 		ArrayList<Point> collection = new ArrayList<Point>();
 		collection.add(new Point(1,2));
-		collection.add(new Point(5,1));
+		collection.add(new Point(5,9));
 		collection.add(new Point(7,4));
 		collection.add(new Point(5,9));
 		collection.add(new Point(9,6));
 		collection.add(new Point(2,4));
-		collection.add(new Point(4,1));
+		collection.add(new Point(4,2));
 		collection.add(new Point(8,1));
 		collection.add(new Point(7,7));
+		collection.add(new Point(13,7));
+		collection.add(new Point(9,12));
+		collection.add(new Point(14,8));
 		
 		problemSolve(collection);
 	}
 	
 	public static void problemSolve(ArrayList<Point> collection) {
-		int temp = collection.get(0).x;
-		int order = 0;
-		for(int i=1;i<collection.size();i++) {
-			if(temp > collection.get(i).x) {
-				temp = collection.get(i).x;
-				order = i;
-			}
-		}
-		int changeX = collection.get(order).x - 0;
-		int changeY = collection.get(order).y - 0;
-		for(int i=0;i<collection.size();i++) {
-			if(i != order) {
-				collection.get(i).x = collection.get(i).x - changeX;
-				collection.get(i).y = collection.get(i).y - changeY;
-			}	
-		}
-		if(order != 0) {
-			Point tempL = collection.get(0);
-			collection.set(0, collection.get(order));
-			collection.set(order, tempL);
-		}
-		Point inter;
-		for(int i=1;i<collection.size();i++) {
-			for(int j=i+1;j<collection.size();j++) {
-				if(collection.get(j).x >= collection.get(i).x) {
-					inter = collection.get(i);
-					collection.set(i, collection.get(j));
-					collection.set(j, inter);
+		
+		ArrayList<Point> temp = collection;
+		
+		double originX;
+		double originY;
+		
+		Point tempPoint;
+		//找出原点
+		for(int i=0;i<temp.size()-1;i++) {
+			for(int j=i+1;j<temp.size();j++) {
+				if(temp.get(j).y < temp.get(i).y) {
+					tempPoint = temp.get(i);
+					temp.set(i, temp.get(j));
+					temp.set(j, tempPoint);
 				}
 			}
 		}
-		for(int i=1;i<collection.size();i++) {
-			for(int j=i+1;j<collection.size();j++) {
-				if(collection.get(i).x > 0 && collection.get(j).x > 0) {		
-					if(sin(collection.get(i)) > sin(collection.get(j))) {
-						inter = collection.get(i);
-						collection.set(i, collection.get(j));
-						collection.set(j, inter);
-					}
-				}
-				if(collection.get(i).x < 0 && collection.get(j).x < 0) {
-					if(sin(collection.get(i)) < sin(collection.get(j))) {
-						inter = collection.get(i);
-						collection.set(i, collection.get(j));
-						collection.set(j, inter);
-					}
-				}		
-			}			
+		
+		//测试用
+		System.out.println("原点为" + temp.get(0).x +"," + temp.get(0).y);
+		
+		originX = temp.get(0).x;
+		originY = temp.get(0).y;
+		
+		//平移使原点为(0,0)
+		for(int i=1;i<temp.size();i++) {
+			temp.get(i).x -= temp.get(0).x;
+			temp.get(i).y -= temp.get(0).y;
 		}
+		
+		//测试用
+		System.out.println("调整坐标后");
+		for(int i=0;i<temp.size();i++) {
+			System.out.println(temp.get(i).x + "," + temp.get(i).y);
+		}
+		
+		temp.get(0).x = 0;
+		temp.get(0).y = 0;
+		
+		ArrayList<Point> positive = new ArrayList<Point>();
+		ArrayList<Point> negative = new ArrayList<Point>();
+		ArrayList<Point> zero = new ArrayList<Point>();
+		
+		for(int i=1;i<temp.size();i++) {
+			if(temp.get(i).x > 0) {
+				positive.add(temp.get(i));
+			} else if(temp.get(i).x < 0) {
+				negative.add(temp.get(i));
+			}else {
+				zero.add(temp.get(i));
+			}
+		}
+		//测试用
+		System.out.println("调整前第一象限的坐标");
+		for(int i=0;i<positive.size();i++) {
+			System.out.println(positive.get(i).x + "," + positive.get(i).y);
+		}
+		//将第一象限的点按照角度的大小排序
+		Point positiveTemp;
+		for(int i=0;i<positive.size();i++) {
+			for(int j=i+1;j<positive.size();j++) {
+				if(positive.get(j).y/positive.get(j).x < positive.get(i).y/positive.get(i).x) {
+					positiveTemp = positive.get(i);
+					positive.set(i, positive.get(j));
+					positive.set(j, positiveTemp);
+				}
+			}
+		}
+		//测试用
+		System.out.println("调整后第一象限的坐标");
+		for(int i=0;i<positive.size();i++) {
+			System.out.println(positive.get(i).x + "," + positive.get(i).y);
+		}
+		//将第二象限的点按照角度大小排序
+		Point negativeTemp;
+		for(int i=0;i<negative.size();i++) {
+			for(int j=i+1;j<negative.size();j++) {
+				if(negative.get(j).y/negative.get(j).x < negative.get(i).y/negative.get(i).x) {
+					negativeTemp = negative.get(i);
+					negative.set(i, negative.get(j));
+					negative.set(j, negativeTemp);
+				}
+			}
+		}
+		
+		//测试用
+		System.out.println("调整后第二象限的坐标");
+		for(int i=0;i<negative.size();i++) {
+			System.out.println(negative.get(i).x + "," + negative.get(i).y);
+		}
+		
+		temp.clear();
+		temp.add(new Point(0,0));
+		for(int i=0;i<positive.size();i++) {
+			temp.add(positive.get(i));
+		}
+		for(int i=0;i<zero.size();i++) {
+			temp.add(zero.get(i));
+		}
+		for(int i=0;i<negative.size();i++) {
+			temp.add(negative.get(i));
+		}
+		
+		//测试用
+		System.out.println("计算凸包之前的arraylist");
+		for(int i=0;i<temp.size();i++) {
+			System.out.println(temp.get(i).x +","+ temp.get(i).y);
+		}
+		
 		ArrayList<Point> result = new ArrayList<Point>();
-		result.add(collection.get(0));
-		result.add(collection.get(1));
-		for(int i=1;i+2<collection.size();i++) {
-			if(collection.get(i).x != collection.get(i+1).x) {
-				if(collection.get(i+2).y > judge(collection.get(i),collection.get(i+1),collection.get(i+2))) {
-					result.add(collection.get(i+2));
+		result.add(temp.get(0));
+		result.add(temp.get(1));
+		for(int i=1;i+2<temp.size();i++) {
+			if(temp.get(i).x != temp.get(i+1).x) {
+				if(temp.get(i+2).y > judge(temp.get(i),temp.get(i+1),temp.get(i+2))) {
+					result.add(temp.get(i+2));
 				}
 			}else {
-				if(collection.get(i+2).x > collection.get(i+1).x) {
-					result.add(collection.get(i+2));
+				if(temp.get(i+2).x > temp.get(i+1).x) {
+					result.add(temp.get(i+2));
 				}
 			} 		
 		}
+		//测试用
+		System.out.println("最终结果");
 		for(int i=0;i<result.size();i++) {
-			System.out.println(result.get(i).x+" "+result.get(i).y);
+			System.out.println((result.get(i).x+originX) +" "+ (result.get(i).y + originY));
 		}
-		
+	
 	}
-	public static int judge(Point a, Point b,Point c) {
-		int A = b.y - a.y;
-		int B = a.x - b.x;
-		int C = b.x*a.y - a.x*b.y;
+	
+	public static double judge(Point a, Point b,Point c) {
+		double A = b.y - a.y;
+		double B = a.x - b.x;
+		double C = b.x*a.y - a.x*b.y;
 		return -(A*c.x + C)/B;
 	}
-	
-	public static double sin(Point point) {
-		return point.y/Math.sqrt(point.x*point.x + point.y*point.y);
-	}
-	 
-	
 }
 
 class Point {
+	public double x;
+	public double y;
 	
-	public int x;
-	public int y;
-	
-	public Point(int x, int y) {
+	public Point(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
