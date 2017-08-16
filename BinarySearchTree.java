@@ -1,202 +1,157 @@
+package algorithm;
 
-public class BinarySearchTree {
+public class BinarySearchTree<T extends Comparable<T>> {
 	
-	public static void main(String[] args) {
-		BinarySearchTree tree = new BinarySearchTree();
-		tree.insert(50);
-		tree.insert(64);
-		tree.insert(14);
-		tree.insert(44);
-		tree.insert(24);
-		tree.delete(14);
-	}
-	
-	/*
-	 * 二叉查找树
-	 * 左子树上任意节点的值均小于其父节点
-	 * 右子数上任意节点的值均大于其父节点
-	 * 没有值相等的节点
-	 **/
-	
-	/*
-	 * Node:二叉树的节点,包括左孩子,右孩子,父节点和值
-	 * 
-	 * */
-	class Node {
-		private Node left;
-		private Node right;
-		private Node parent;
-		private int key;
+	@SuppressWarnings("hiding")
+	class Node<T> {
+		private Node<T> left;
+		private Node<T> right;
+		private Node<T> parent;
+		private T key;
 		
-		public Node(int key,Node left,Node right,Node parent) {
+		public Node(T key, Node<T> left, Node<T> right, Node<T> parent) {
 			this.key = key;
 			this.left = left;
 			this.right = right;
 			this.parent = parent;
 		}
-		
-		public int getKey() {
-			return key;
-		}
-		
-		public void setKey(int key) {
-			this.key = key;
-		}
 	}
 	
-	private Node node;
-	
+	private Node<T> mRoot;
 	public BinarySearchTree() {
-		node = null;
-	}
-	
-	public void insert(int key) {
-		Node newNode = new Node(key, null, null, null);
-		insert(this,newNode);
-	}
-	
-	public void insert(BinarySearchTree tree, Node node) {
-		Node currentNode = tree.node;
 		
+	}
+	
+	public void add(T item) {
+		// TODO Auto-generated method stub
+		Node<T> newNode = new Node<T>(item, null, null, null);
+		add(this,newNode);
+	}
+	
+	public void add(BinarySearchTree<T> bstMultiset, Node<T> newNode) {
+		Node<T> currentNode = bstMultiset.mRoot;
+		//如果根节点为空
+		if(currentNode == null) {
+			bstMultiset.mRoot = newNode;
+		}
+		//根节点不为空
 		while(currentNode != null) {
-			if(currentNode.getKey() > node.getKey()) {
+			//放到左子树
+			if(currentNode.key.compareTo(newNode.key) > 0) {
 				if(currentNode.left == null) {
-					currentNode.left = node;
+					currentNode.left = newNode;
+					newNode.parent = currentNode;
 					break;
 				}else {
 					currentNode = currentNode.left;
 				}
-			}
-			if(currentNode.getKey() < node.getKey()) {
+			}else {	//放到右子树
 				if(currentNode.right == null) {
-					currentNode.right = node;
+					currentNode.right = newNode;
+					newNode.parent = currentNode;
 					break;
 				}else {
 					currentNode = currentNode.right;
 				}
-			}
-
-		}
-	}
-	//返回以node为根的二叉树的最小节点
-	public Node minNode(Node node) {
-		if(node == null) {
-			return null;
-		}
-		while(node.left != null) {
-			node = node.left;
-		}
-		
-		return node;
-	}
-	//返回以node为根的二叉树的最大节点
-	public Node maxNode(Node node) {
-		
-		if(node == null) {
-			return null;
-		}
-		while(node.right != null) {
-			node = node.right;
-		}
-		
-		return node;
-	}
-	
-	public Node predecessor(Node node) {
-		/* 查找node节点的前驱节点,即小于该节点的最大节点
-		 * 如果node有左子树,则node的前驱结点为其左子树的最大节点
-		 * 如果node没有左子树
-		 * 	  如果node为一个右孩子,则node的前驱结点为其父节点
-		 * 	 如果node为一个左孩子,则node的前驱结点为其拥有右孩子的最低的父节点
-		 * */
-		if(node.left != null) {
-			return maxNode(node.left);
-		}
-		Node parent = node.parent;
-		if(node.getKey() > parent.getKey()) {
-			return parent;
-		}else {
-			while(parent.right == null) {
-				parent = parent.parent;
-			}
-			return parent;
-		}
+			}		
+		}		
 	}
 
-	public Node successor(Node node) {
-		/* 查找node节点的后继节点,即大于该节点的最小节点
-		 * 如果node有右子树,则node的后继结点为其右子树的最小节点
-		 * 如果node没有右子树
-		 * 	  如果node为一个左孩子,则node的后继结点为其父节点
-		 * 	  如果node为一个右孩子,则node的后继结点为其拥有左孩子的最低的父节点
-		 * */
+	public Node<T> successor(Node<T> node) {
 		if(node.right != null) {
-			return minNode(node.right);
-		}
-		Node parent = node.parent;
-		if(node.getKey() < parent.getKey()) {
-			return parent;
-		}else {
-			while(parent.left == null) {
-				parent = parent.parent;
+			Node<T> temp = node.right;
+			while(temp.left != null) {
+				temp = temp.left;
 			}
-			return parent;
+			return temp;
 		}
-	}
-	
-	public Node search(int key) {
 		
-		return search(this.node, key);
+		Node<T> parent = node.parent;
+		while((parent != null) && (node == parent.right)) {
+			node = parent;
+			parent = parent.parent;
+		}
+		
+		return parent;
+		
 	}
-	
-	public Node search(Node node, int key) {
+	public Node<T> search(Node<T> node, T value) {
 		if(node == null) {
 			return node;
 		}
-		if(node.getKey() == key) {
+		if(node.key.compareTo(value) == 0) {
 			return node;
-		}else if(node.getKey() > key) {
-			return search(node.left, key);
+		}else if(node.key.compareTo(value) > 0) {
+			return search(node.left, value);
 		}else {
-			return search(node.right, key);
+			return search(node.right, value);
+		}
+		
+	}
+	
+	public void delete(Node<T> node) {
+		if(node == null) {
+			return;
+		}
+		// 被删除的节点没有左孩子和右孩子
+		if(node.left == null && node.right == null) {
+			System.out.println(node.parent.key);
+			if(node.parent.left == node) {
+				node.parent.left = null;
+			}else {
+				node.parent.right = null;
+			}
+			return;
+		}
+		//如果被删除的节点的左孩子为空 右孩子不为空
+		if(node.left == null && node.right != null) {		
+			if(node.parent.left == node) {
+				node.parent.left = node.right;
+				node.right.parent = node.parent;
+			}else {//如果右孩子为空
+				node.parent.right = node.right;
+				node.right.parent = node.parent;
+			}
+			return;
+		}
+		//如果被删除的节点的左孩子不为空 右孩子为空
+		if(node.left != null && node.right == null) {
+			if(node.parent.left == node) {
+				node.parent.left = node.left;
+				node.left.parent = node.parent;
+			}else {
+				node.parent.right = node.left;
+				node.left.parent = node.parent;
+			}
+			return;
+		}
+		
+		Node<T> succNode = successor(node);
+		delete(succNode);
+		node.key = succNode.key;
+	}
+		
+	public void delete(T item) {
+		// TODO Auto-generated method stub
+		Node<T> node = search(mRoot, item);
+		if(node == null) {
+			System.err.println("no such node");
+		}else {
+			delete(node);
 		}
 	}
 	
-	public void delete(int key) {
-		Node node = search(this.node, key);
+	public void preOrder(Node<T> node) {
 		if(node != null) {
-			delete(this, node);
+			System.out.println(node.key);
+			preOrder(node.left);
+			preOrder(node.right);
 		}
+
 	}
-	//node:需要被删除的节点
-	public void delete(BinarySearchTree tree, Node node) {
-		
-		Node temp;
-		// 被删除的节点没有子节点
-		if(node.left == null && node.right == null) {
-			node = null;
-		}else {
-			temp = successor(node);
-		}
-		//被删除的节点只有一个子节点
-		if(node.left == null || node.right == null) {
-			if(node.left == null) {
-				node = node.right;
-			}else {
-				node = node.left;
-			}
-		}
-		//被删除的节点有两个子节点
-		temp = successor(node);
-		node.setKey(temp.getKey());
-		if(temp.right == null) {
-			temp = null;
-		}else {
-			temp = temp.right;
-			
-		}
-		
-		
+	
+	public void print() {
+		// TODO Auto-generated method stub
+		preOrder(mRoot);
 	}
 }
-
