@@ -137,8 +137,9 @@ public class BinarySearchTree<T extends Comparable<T>> {
 		}
 		// 被删除的节点没有左孩子和右孩子
 		if(node.left == null && node.right == null) {
-			System.out.println(node.parent.key);
-			if(node.parent.left == node) {
+			if(node.parent == null) {
+				mRoot = null;
+			}else if(node.parent.left == node) {
 				node.parent.left = null;
 			}else {
 				node.parent.right = null;
@@ -146,11 +147,14 @@ public class BinarySearchTree<T extends Comparable<T>> {
 			return;
 		}
 		//如果被删除的节点的左孩子为空 右孩子不为空
-		if(node.left == null && node.right != null) {		
-			if(node.parent.left == node) {
+		if(node.left == null && node.right != null) {
+			if(node.parent == null) {
+				mRoot = mRoot.right;
+				mRoot.parent = null;
+			}else if(node.parent.left == node) {
 				node.parent.left = node.right;
 				node.right.parent = node.parent;
-			}else {//如果右孩子为空
+			}else {
 				node.parent.right = node.right;
 				node.right.parent = node.parent;
 			}
@@ -158,7 +162,10 @@ public class BinarySearchTree<T extends Comparable<T>> {
 		}
 		//如果被删除的节点的左孩子不为空 右孩子为空
 		if(node.left != null && node.right == null) {
-			if(node.parent.left == node) {
+			if(node.parent == null) {
+				mRoot = mRoot.left;
+				mRoot.parent = null;
+			}else if(node.parent.left == node) {
 				node.parent.left = node.left;
 				node.left.parent = node.parent;
 			}else {
@@ -167,10 +174,16 @@ public class BinarySearchTree<T extends Comparable<T>> {
 			}
 			return;
 		}
-		
-		Node<T> succNode = successor(node);
-		delete(succNode);
-		node.key = succNode.key;
+		Node<T> temp;
+		if(node.parent == null) {
+			temp = predecessor(node);
+			mRoot.key = temp.key;
+		}else {
+			temp = successor(node);
+			node.key = temp.key;
+		}
+			
+		delete(temp);
 	}
 	//删除节点 外部调用
 	public void delete(T item) {
