@@ -1,5 +1,14 @@
-public class ConvexHull {
+import java.util.ArrayList;
 
+public class ConvexHull {
+	/*
+	 * GrahamËã·¨
+	 * 1.ÏÈÕÒ³ö×ø±êÖĞ×İ×ø±ê×îĞ¡µÄµã(a,b) ÉèÖÃÎªÔ­µã(0,0) È»ºóÆäËûËùÓĞµã¶¼½øĞĞÆ½ÒÆ e.g. (x-a,y-b) 
+	 * 2.½«ËùÓĞ×ø±ê°´ÕÕĞ±ÂÊ´óĞ¡ÅÅĞò ¼¯ºÏÖĞµÚÒ»Î»c1ºÍµÚ¶şÎ»c2¼´ÎªÍ¹°üÉÏµÄµã 
+	 * 3.for i=0 i+2<¼¯ºÏsize °Ñc(i) c(i+1) c(i+2)·ÅÈëresultÖĞ È»ºóÅĞ¶Ïc(i)c(i+1)ËùĞÎ³ÉµÄÖ±ÏßµÄĞ±ÂÊÓëc(i+1)c(i+2)ËùĞÎ³ÉµÄĞ±ÂÊµÄ´óĞ¡ 
+	 * 4.Èç¹ûºóÕßĞ±ÂÊ´óÓÚÇ°ÕßĞ±ÂÊ »Øµ½µÚÈı²½
+	 * 5.Èç¹ûºóÕßĞ±ÂÊĞ¡ÓÚÇ°ÕßĞ±ÂÊ ÒÆ³ıresultÖĞ×îºóÒ»Î»¼´c(i+2) »Øµ½µÚÈı²½
+	 * */
 	public static void main(String[] args) {
 
 		ArrayList<Point> collection = new ArrayList<Point>();
@@ -9,6 +18,7 @@ public class ConvexHull {
 		collection.add(new Point(7,4));
 		collection.add(new Point(9,12));
 		collection.add(new Point(14,8));
+		collection.add(new Point(17,10));
 		
 		problemSolve(collection);
 	}
@@ -21,7 +31,7 @@ public class ConvexHull {
 		double originY;
 
 		Point tempPoint;
-		//æ‰¾å‡ºåŸç‚¹
+		//ÕÒ³öÔ­µã
 		for(int i=0;i<temp.size()-1;i++) {
 			for(int j=i+1;j<temp.size();j++) {
 				if(temp.get(j).y < temp.get(i).y) {
@@ -31,20 +41,20 @@ public class ConvexHull {
 				}
 			}
 		}
-		//æµ‹è¯•ç”¨
-		System.out.println("åŸç‚¹ä¸º" + temp.get(0).x +"," + temp.get(0).y);
+		//²âÊÔÓÃ
+		System.out.println("Ô­µãÎª" + temp.get(0).x +"," + temp.get(0).y);
 		
 		originX = temp.get(0).x;
 		originY = temp.get(0).y;	
 
-		//å¹³ç§»ä½¿åŸç‚¹ä¸º(0,0)
+		//Æ½ÒÆÊ¹Ô­µãÎª(0,0)
 		for(int i=1;i<temp.size();i++) {
 			temp.get(i).x -= temp.get(0).x;
 			temp.get(i).y -= temp.get(0).y;
 		}
 
-		//æµ‹è¯•ç”¨
-		System.out.println("è°ƒæ•´åæ ‡å");
+		//²âÊÔÓÃ
+		System.out.println("µ÷Õû×ø±êºó");
 		for(int i=0;i<temp.size();i++) {
 			System.out.println(temp.get(i).x + "," + temp.get(i).y);
 		}
@@ -64,13 +74,13 @@ public class ConvexHull {
 			}
 		}
 		
-		//æµ‹è¯•ç”¨
-		System.out.println("è°ƒæ•´å‰ç¬¬ä¸€è±¡é™çš„åæ ‡");
+		//²âÊÔÓÃ
+		System.out.println("µ÷ÕûÇ°µÚÒ»ÏóÏŞµÄ×ø±ê");
 		for(int i=0;i<positive.size();i++) {
 			System.out.println(positive.get(i).x + "," + positive.get(i).y);
 		}
 		
-		//å°†ç¬¬ä¸€è±¡é™çš„ç‚¹æŒ‰ç…§è§’åº¦çš„å¤§å°æ’åº
+		//½«µÚÒ»ÏóÏŞµÄµã°´ÕÕ½Ç¶ÈµÄ´óĞ¡ÅÅĞò
 		Point positiveTemp;
 		for(int i=0;i<positive.size();i++) {
 			for(int j=i+1;j<positive.size();j++) {
@@ -82,13 +92,13 @@ public class ConvexHull {
 			}
 		}
 
-		//æµ‹è¯•ç”¨
-		System.out.println("è°ƒæ•´åç¬¬ä¸€è±¡é™çš„åæ ‡");
+		//²âÊÔÓÃ
+		System.out.println("µ÷ÕûºóµÚÒ»ÏóÏŞµÄ×ø±ê");
 		for(int i=0;i<positive.size();i++) {
 			System.out.println(positive.get(i).x + "," + positive.get(i).y);
 		}
 		
-		//å°†ç¬¬äºŒè±¡é™çš„ç‚¹æŒ‰ç…§è§’åº¦å¤§å°æ’åº
+		//½«µÚ¶şÏóÏŞµÄµã°´ÕÕ½Ç¶È´óĞ¡ÅÅĞò
 		Point negativeTemp;
 		for(int i=0;i<negative.size();i++) {
 			for(int j=i+1;j<negative.size();j++) {
@@ -100,8 +110,8 @@ public class ConvexHull {
 			}
 		}
 		
-		//æµ‹è¯•ç”¨
-		System.out.println("è°ƒæ•´åç¬¬äºŒè±¡é™çš„åæ ‡");
+		//²âÊÔÓÃ
+		System.out.println("µ÷ÕûºóµÚ¶şÏóÏŞµÄ×ø±ê");
 		for(int i=0;i<negative.size();i++) {
 			System.out.println(negative.get(i).x + "," + negative.get(i).y);
 		}
@@ -118,8 +128,8 @@ public class ConvexHull {
 			temp.add(negative.get(i));
 		}	
 
-		//æµ‹è¯•ç”¨
-		System.out.println("è®¡ç®—å‡¸åŒ…ä¹‹å‰çš„arraylist");
+		//²âÊÔÓÃ
+		System.out.println("¼ÆËãÍ¹°üÖ®Ç°µÄarraylist");
 		for(int i=0;i<temp.size();i++) {
 			System.out.println((temp.get(i).x + originX) +","+ (temp.get(i).y + originY));
 		}
@@ -134,13 +144,13 @@ public class ConvexHull {
 			}
 		}
 		
-		//æµ‹è¯•ç”¨
-		System.out.println("æœ€ç»ˆç»“æœ");
+		//²âÊÔÓÃ
+		System.out.println("×îÖÕ½á¹û");
 		for(int i=0;i<result.size();i++) {
 			System.out.println((result.get(i).x+originX) +" "+ (result.get(i).y + originY));
 		}
 	}
-	//ä¸¤ç‚¹å½¢æˆçš„ç›´çº¿çš„æ–œç‡
+	//Á½µãĞÎ³ÉµÄÖ±ÏßµÄĞ±ÂÊ
 	public static double judge(Point a, Point b) {
 		return (b.y - a.y) / (b.x - a.x);
 	}
